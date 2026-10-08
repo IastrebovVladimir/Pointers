@@ -1,0 +1,57 @@
+Running main() from googletest/googletest/src/gtest_main.cc
+[==========] Running 18 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 10 tests from SharedTests
+[ RUN      ] SharedTests.EmptyPointer
+[       OK ] SharedTests.EmptyPointer (10 ms)
+[ RUN      ] SharedTests.CreateObject
+[       OK ] SharedTests.CreateObject (2 ms)
+[ RUN      ] SharedTests.CopyConstructor
+[       OK ] SharedTests.CopyConstructor (3 ms)
+[ RUN      ] SharedTests.CopyQual
+[       OK ] SharedTests.CopyQual (2 ms)
+[ RUN      ] SharedTests.MoveConstructor
+[       OK ] SharedTests.MoveConstructor (3 ms)
+[ RUN      ] SharedTests.MoveQual
+[       OK ] SharedTests.MoveQual (2 ms)
+[ RUN      ] SharedTests.Reset
+[       OK ] SharedTests.Reset (3 ms)
+[ RUN      ] SharedTests.Pointers10000
+[       OK ] SharedTests.Pointers10000 (39 ms)
+[ RUN      ] SharedTests.Pointers100000
+[       OK ] SharedTests.Pointers100000 (346 ms)
+[ RUN      ] SharedTests.Pointers1000000
+[       OK ] SharedTests.Pointers1000000 (3830 ms)
+[----------] 10 tests from SharedTests (4253 ms total)
+
+[----------] 8 tests from UniqueTests
+[ RUN      ] UniqueTests.EmptyPointer
+[       OK ] UniqueTests.EmptyPointer (1 ms)
+[ RUN      ] UniqueTests.ChangeValue
+[       OK ] UniqueTests.ChangeValue (1 ms)
+[ RUN      ] UniqueTests.MoveConstructor
+[       OK ] UniqueTests.MoveConstructor (2 ms)
+[ RUN      ] UniqueTests.MoveAssigment
+[       OK ] UniqueTests.MoveAssigment (2 ms)
+[ RUN      ] UniqueTests.Reset
+[       OK ] UniqueTests.Reset (1 ms)
+[ RUN      ] UniqueTests.Pointers10000
+[       OK ] UniqueTests.Pointers10000 (42 ms)
+[ RUN      ] UniqueTests.Pointers100000
+[       OK ] UniqueTests.Pointers100000 (393 ms)
+[ RUN      ] UniqueTests.Pointers1000000
+[       OK ] UniqueTests.Pointers1000000 (4473 ms)
+[----------] 8 tests from UniqueTests (4919 ms total)
+
+[----------] Global test environment tear-down
+[==========] 18 tests from 2 test suites ran. (9214 ms total)
+[  PASSED  ] 18 tests.
+==2259==
+==2259== HEAP SUMMARY:
+==2259==     in use at exit: 0 bytes in 0 blocks
+==2259==   total heap usage: 1,110,384 allocs, 1,110,384 frees, 28,576,268 bytes allocated
+==2259==
+==2259== All heap blocks were freed -- no leaks are possible
+==2259==
+==2259== For lists of detected and suppressed errors, rerun with: -s
+==2259== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
