@@ -4,12 +4,10 @@
 template<typename T>
 class SharedPtr {
 private:
-    // rvalue r lvalue - прочитать
-    // прочитать про циклические указатели
     T* ptr;
     std::size_t *referenceCount;
 
-    void RemoveCurrent() {
+    void RemoveCurrent() noexcept {
         if (referenceCount == nullptr)
             return;
 
@@ -25,7 +23,7 @@ private:
     }
 
 public:
-    SharedPtr() : ptr(nullptr), referenceCount(nullptr) {}
+    SharedPtr() noexcept : ptr(nullptr), referenceCount(nullptr) {}
 
     SharedPtr(T *object) : ptr(object) {
         if (object == nullptr)
@@ -34,18 +32,18 @@ public:
             referenceCount = new std::size_t(1);
     }
 
-    SharedPtr(const SharedPtr &other) : ptr(other.ptr), referenceCount(other.referenceCount) {
+    SharedPtr(const SharedPtr &other) noexcept : ptr(other.ptr), referenceCount(other.referenceCount) {
         if (referenceCount != nullptr) {
             (*referenceCount)++;
         }
     }
 
-    SharedPtr(SharedPtr &&other) : ptr(other.ptr), referenceCount(other.referenceCount) {
+    SharedPtr(SharedPtr &&other) noexcept : ptr(other.ptr), referenceCount(other.referenceCount) {
         other.ptr = nullptr;
         other.referenceCount = nullptr;
     }
 
-    SharedPtr &operator=(const SharedPtr &other) {
+    SharedPtr &operator=(const SharedPtr &other) noexcept {
         if (this != &other) {
             if (other.referenceCount != nullptr)
                 (*other.referenceCount)++;
@@ -59,7 +57,7 @@ public:
         return *this;
     }
 
-    SharedPtr &operator=(SharedPtr &&other) {
+    SharedPtr &operator=(SharedPtr &&other) noexcept {
         if (this != &other) {
             RemoveCurrent();
 
@@ -81,7 +79,7 @@ public:
         return *ptr;
     }
 
-    T* Get() const {
+    T* Get() const noexcept {
         return ptr;
     }
 
@@ -105,7 +103,7 @@ public:
         }
     }
 
-    ~SharedPtr() {
+    ~SharedPtr() noexcept {
         RemoveCurrent();
     }
 
