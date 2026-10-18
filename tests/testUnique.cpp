@@ -54,6 +54,62 @@ TEST(UniqueTests, Reset) {
     EXPECT_EQ(*ptr, 20);
 }
 
+TEST(UniqueTests, ArrayAccess) {
+    UniquePtr<int[]> numbers(new int[3]{10, 20, 30});
+
+    ASSERT_NE(numbers.Get(), nullptr);
+
+    EXPECT_EQ(numbers[0], 10);
+    EXPECT_EQ(numbers[1], 20);
+    EXPECT_EQ(numbers[2], 30);
+
+    numbers[1] = 100;
+
+    EXPECT_EQ(numbers[1], 100);
+}
+
+TEST(UniqueTests, ArrayMoveConstructor) {
+    UniquePtr<int[]> first(new int[3]{10, 20, 30});
+    int* address = first.Get();
+
+    UniquePtr<int[]> second(std::move(first));
+
+    EXPECT_EQ(first.Get(), nullptr);
+    ASSERT_EQ(second.Get(), address);
+
+    EXPECT_EQ(second[0], 10);
+    EXPECT_EQ(second[2], 30);
+}
+
+TEST(UniqueTests, ArrayMoveAssignment) {
+    UniquePtr<int[]> first(new int[2]{10, 20});
+    UniquePtr<int[]> second(new int[3]{30, 40, 50});
+
+    int* address = first.Get();
+
+    second = std::move(first);
+
+    EXPECT_EQ(first.Get(), nullptr);
+    ASSERT_EQ(second.Get(), address);
+
+    EXPECT_EQ(second[0], 10);
+    EXPECT_EQ(second[1], 20);
+}
+
+TEST(UniqueTests, ArrayReset) {
+    UniquePtr<int[]> numbers(new int[2]{10, 20});
+
+    numbers.Reset(new int[3]{30, 40, 50});
+
+    ASSERT_NE(numbers.Get(), nullptr);
+    EXPECT_EQ(numbers[0], 30);
+    EXPECT_EQ(numbers[2], 50);
+
+    numbers.Reset();
+
+    EXPECT_EQ(numbers.Get(), nullptr);
+}
+
 TEST(UniqueTests, Pointers10000) {
     UniquePtr<int> pointers[10000];
 
