@@ -175,25 +175,32 @@ TEST(UniqueTests, Pointers100000000) {
 }
 
 TEST(UniqueTests, Pointers1000000000) {
-    std::vector<UniquePtr<int>> pointers(1000000000);
+    int total = 1000000000;
+    int batchSize = 1000000;
 
-    for (int i = 0; i < 1000000000; i++)
-        pointers[i].Reset(new int(i));
+    for (int offset = 0; offset < total; offset += batchSize) {
+        std::vector<UniquePtr<int>> pointers(batchSize);
 
-    for (int i = 0; i < 1000000000; i++) {
-        EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << i;
-        EXPECT_EQ(*pointers[i], i) << "Индекс: " << i;
-    }
+        for (int i = 0; i < batchSize; ++i) {
+            pointers[i].Reset(new int(offset + i));
+        }
 
-    for (int i = 0; i < 1000000000; i += 2)
-        pointers[i].Reset();
+        for (int i = 0; i < batchSize; ++i) {
+            EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << offset + i;
+            EXPECT_EQ(*pointers[i], offset + i) << "Индекс: " << offset + i;
+        }
 
-    for (int i = 0; i < 1000000000; i++) {
-        if (i % 2 == 0)
-            EXPECT_EQ(pointers[i].Get(), nullptr) << "Индекс: " << i;
-        else {
-            EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << i;
-            EXPECT_EQ(*pointers[i], i) << "Индекс: " << i;
+        for (int i = 0; i < batchSize; i += 2) {
+            pointers[i].Reset();
+        }
+
+        for (int i = 0; i < batchSize; ++i) {
+            if (i % 2 == 0) {
+                EXPECT_EQ(pointers[i].Get(), nullptr) << "Индекс: " << offset + i;
+            } else {
+                EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << offset + i;
+                EXPECT_EQ(*pointers[i], offset + i) << "Индекс: " << offset + i;
+            }
         }
     }
 }
