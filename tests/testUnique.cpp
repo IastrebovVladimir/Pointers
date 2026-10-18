@@ -125,3 +125,75 @@ TEST(UniqueTests, Pointers1000000) {
         }
     }
 }
+
+TEST(UniqueTests, Pointers10000000) {
+    std::vector<UniquePtr<int>> pointers(10000000);
+
+    for (int i = 0; i < 10000000; i++)
+        pointers[i].Reset(new int(i));
+
+    for (int i = 0; i < 10000000; i++) {
+        EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << i;
+        EXPECT_EQ(*pointers[i], i) << "Индекс: " << i;
+    }
+
+    for (int i = 0; i < 10000000; i += 2)
+        pointers[i].Reset();
+
+    for (int i = 0; i < 10000000; i++) {
+        if (i % 2 == 0)
+            EXPECT_EQ(pointers[i].Get(), nullptr) << "Индекс: " << i;
+        else {
+            EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << i;
+            EXPECT_EQ(*pointers[i], i) << "Индекс: " << i;
+        }
+    }
+}
+
+TEST(UniqueTests, Pointers100000000) {
+    std::vector<UniquePtr<int>> pointers(100000000);
+
+    for (int i = 0; i < 100000000; i++)
+        pointers[i].Reset(new int(i));
+
+    for (int i = 0; i < 100000000; i++) {
+        EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << i;
+        EXPECT_EQ(*pointers[i], i) << "Индекс: " << i;
+    }
+
+    for (int i = 0; i < 100000000; i += 2)
+        pointers[i].Reset();
+
+    for (int i = 0; i < 100000000; i++) {
+        if (i % 2 == 0)
+            EXPECT_EQ(pointers[i].Get(), nullptr) << "Индекс: " << i;
+        else {
+            EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << i;
+            EXPECT_EQ(*pointers[i], i) << "Индекс: " << i;
+        }
+    }
+}
+
+TEST(UniqueTests, Pointers1000000000) {
+    std::vector<UniquePtr<int>> pointers(1000000000);
+
+    for (int i = 0; i < 1000000000; i++)
+        pointers[i].Reset(new int(i));
+
+    for (int i = 0; i < 1000000000; i++) {
+        EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << i;
+        EXPECT_EQ(*pointers[i], i) << "Индекс: " << i;
+    }
+
+    for (int i = 0; i < 1000000000; i += 2)
+        pointers[i].Reset();
+
+    for (int i = 0; i < 1000000000; i++) {
+        if (i % 2 == 0)
+            EXPECT_EQ(pointers[i].Get(), nullptr) << "Индекс: " << i;
+        else {
+            EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << i;
+            EXPECT_EQ(*pointers[i], i) << "Индекс: " << i;
+        }
+    }
+}
