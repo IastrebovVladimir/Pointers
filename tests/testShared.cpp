@@ -83,6 +83,84 @@ TEST(SharedTests, Reset) {
     EXPECT_EQ(first.GetReferenceCount(), 0u);
 }
 
+TEST(SharedTests, ArrayCopyConstructor) {
+    SharedPtr<int[]> first(new int[3]{10, 20, 30});
+    SharedPtr<int[]> second(first);
+    ASSERT_EQ(first.Get(), second.Get());
+
+    EXPECT_EQ(first.GetReferenceCount(), 2u);
+    EXPECT_EQ(second.GetReferenceCount(), 2u);
+
+    second[1] = 100;
+
+    EXPECT_EQ(first[1], 100);
+}
+
+TEST(SharedTests, ArrayCopyAssignment) {
+    SharedPtr<int[]> first(new int[2]{10, 20});
+    SharedPtr<int[]> second(new int[3]{30, 40, 50});
+
+    second = first;
+
+    ASSERT_NE(second.Get(), nullptr);
+    EXPECT_EQ(first.Get(), second.Get());
+    EXPECT_EQ(first.GetReferenceCount(), 2u);
+    EXPECT_EQ(second.GetReferenceCount(), 2u);
+    EXPECT_EQ(second[1], 20);
+}
+
+TEST(SharedTests, ArrayMoveConstructor) {
+    SharedPtr<int[]> first(new int[2]{10, 20});
+    int* address = first.Get();
+
+    SharedPtr<int[]> second(std::move(first));
+
+    EXPECT_TRUE(first.Empty());
+    EXPECT_EQ(first.GetReferenceCount(), 0u);
+
+    ASSERT_EQ(second.Get(), address);
+    EXPECT_EQ(second.GetReferenceCount(), 1u);
+    EXPECT_EQ(second[1], 20);
+}
+
+TEST(SharedTests, ArrayMoveAssignment) {
+    SharedPtr<int[]> first(new int[2]{10, 20});
+    SharedPtr<int[]> second(new int[3]{30, 40, 50});
+
+    int* address = first.Get();
+
+    second = std::move(first);
+
+    EXPECT_TRUE(first.Empty());
+    EXPECT_EQ(first.GetReferenceCount(), 0u);
+
+    ASSERT_EQ(second.Get(), address);
+    EXPECT_EQ(second.GetReferenceCount(), 1u);
+    EXPECT_EQ(second[1], 20);
+}
+
+TEST(SharedTests, ArrayReset) {
+    SharedPtr<int[]> first(new int[2]{10, 20});
+    SharedPtr<int[]> second(first);
+
+    first.Reset(new int[3]{30, 40, 50});
+
+    ASSERT_NE(first.Get(), nullptr);
+    ASSERT_NE(second.Get(), nullptr);
+
+    EXPECT_NE(first.Get(), second.Get());
+    EXPECT_EQ(first.GetReferenceCount(), 1u);
+    EXPECT_EQ(second.GetReferenceCount(), 1u);
+
+    EXPECT_EQ(first[2], 50);
+    EXPECT_EQ(second[1], 20);
+
+    first.Reset();
+
+    EXPECT_TRUE(first.Empty());
+    EXPECT_EQ(first.GetReferenceCount(), 0u);
+    EXPECT_EQ(second[0], 10);
+}
 
 TEST(SharedTests, Pointers10000) {
     SharedPtr<int> pointers[10000];
