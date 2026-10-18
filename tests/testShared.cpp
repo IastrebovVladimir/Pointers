@@ -175,3 +175,117 @@ TEST(SharedTests, Pointers1000000) {
     EXPECT_EQ(original.GetReferenceCount(), 1u);
     EXPECT_EQ(*original, 67);
 }
+
+TEST(SharedTests, Pointers10000000) {
+    std::vector<SharedPtr<int>> pointers(10000000);
+    SharedPtr<int> original(new int(67));
+
+    pointers[0] = original;
+
+    for (std::size_t i = 1; i < 10000000; ++i) {
+        pointers[i] = pointers[i - 1];
+    }
+
+    EXPECT_EQ(original.GetReferenceCount(), 10000001u);
+
+    for (std::size_t i = 0; i < 10000000; ++i) {
+        EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << i;
+        EXPECT_EQ(*pointers[i], 67) << "Индекс: " << i;
+    }
+
+    for (std::size_t i = 0; i < 10000000; i += 2) {
+        pointers[i].Reset();
+    }
+
+    EXPECT_EQ(original.GetReferenceCount(), 5000001u);
+
+    for (std::size_t i = 0; i < 10000000; ++i) {
+        if (i % 2 == 0) {
+            EXPECT_EQ(pointers[i].Get(), nullptr) << "Индекс: " << i;
+        } else {
+            EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << i;
+            EXPECT_EQ(*pointers[i], 67) << "Индекс: " << i;
+        }
+    }
+
+    pointers.clear();
+
+    EXPECT_EQ(original.GetReferenceCount(), 1u);
+    EXPECT_EQ(*original, 67);
+}
+
+TEST(SharedTests, Pointers100000000) {
+    std::vector<SharedPtr<int>> pointers(100000000);
+    SharedPtr<int> original(new int(67));
+
+    pointers[0] = original;
+
+    for (std::size_t i = 1; i < 100000000; ++i) {
+        pointers[i] = pointers[i - 1];
+    }
+
+    EXPECT_EQ(original.GetReferenceCount(), 100000001u);
+
+    for (std::size_t i = 0; i < 100000000; ++i) {
+        EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << i;
+        EXPECT_EQ(*pointers[i], 67) << "Индекс: " << i;
+    }
+
+    for (std::size_t i = 0; i < 100000000; i += 2) {
+        pointers[i].Reset();
+    }
+
+    EXPECT_EQ(original.GetReferenceCount(), 50000001u);
+
+    for (std::size_t i = 0; i < 100000000; ++i) {
+        if (i % 2 == 0) {
+            EXPECT_EQ(pointers[i].Get(), nullptr) << "Индекс: " << i;
+        } else {
+            EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << i;
+            EXPECT_EQ(*pointers[i], 67) << "Индекс: " << i;
+        }
+    }
+
+    pointers.clear();
+
+    EXPECT_EQ(original.GetReferenceCount(), 1u);
+    EXPECT_EQ(*original, 67);
+}
+
+TEST(SharedTests, Pointers1000000000) {
+    std::vector<SharedPtr<int>> pointers(1000000000);
+    SharedPtr<int> original(new int(67));
+
+    pointers[0] = original;
+
+    for (std::size_t i = 1; i < 1000000000; ++i) {
+        pointers[i] = pointers[i - 1];
+    }
+
+    EXPECT_EQ(original.GetReferenceCount(), 1000000001u);
+
+    for (std::size_t i = 0; i < 1000000000; ++i) {
+        EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << i;
+        EXPECT_EQ(*pointers[i], 67) << "Индекс: " << i;
+    }
+
+    for (std::size_t i = 0; i < 1000000000; i += 2) {
+        pointers[i].Reset();
+    }
+
+    EXPECT_EQ(original.GetReferenceCount(), 500000001u);
+
+    for (std::size_t i = 0; i < 1000000000; ++i) {
+        if (i % 2 == 0) {
+            EXPECT_EQ(pointers[i].Get(), nullptr) << "Индекс: " << i;
+        } else {
+            EXPECT_NE(pointers[i].Get(), nullptr) << "Индекс: " << i;
+            EXPECT_EQ(*pointers[i], 67) << "Индекс: " << i;
+        }
+    }
+
+    pointers.clear();
+
+    EXPECT_EQ(original.GetReferenceCount(), 1u);
+    EXPECT_EQ(*original, 67);
+}
