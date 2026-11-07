@@ -260,3 +260,66 @@ TEST(UniqueTests, Pointers1000000000) {
         }
     }
 }
+
+struct UniqueTestBase {
+    virtual ~UniqueTestBase() = default;
+
+    virtual int Value() const {
+        return 10;
+    }
+};
+
+struct UniqueTestDerived : UniqueTestBase {
+    int Value() const override {
+        return 67;
+    }
+};
+
+TEST(UniqueTests, EmptyArray) {
+    UniquePtr<int[]> numbers;
+
+    EXPECT_EQ(numbers.Get(), nullptr);
+
+    numbers.Reset(new int[2]{10, 20});
+
+    ASSERT_NE(numbers.Get(), nullptr);
+    EXPECT_EQ(numbers[0], 10);
+    EXPECT_EQ(numbers[1], 20);
+}
+
+TEST(UniqueTests, ArrayResetSamePointer) {
+    UniquePtr<int[]> numbers(new int[3]{10, 20, 30});
+    int* address = numbers.Get();
+
+    numbers.Reset(address);
+
+    ASSERT_EQ(numbers.Get(), address);
+    EXPECT_EQ(numbers[0], 10);
+    EXPECT_EQ(numbers[1], 20);
+    EXPECT_EQ(numbers[2], 30);
+}
+
+TEST(UniqueTests, DerivedToBaseMoveConstructor) {
+    UniquePtr<UniqueTestDerived> first(new UniqueTestDerived);
+    UniqueTestBase* address = first.Get();
+
+    UniquePtr<UniqueTestBase> second(std::move(first));
+
+    EXPECT_EQ(first.Get(), nullptr);
+    ASSERT_EQ(second.Get(), address);
+    ASSERT_NE(second.Get(), nullptr);
+    EXPECT_EQ((*second).Value(), 67);
+}
+
+TEST(UniqueTests, DerivedToBaseMoveAssignment) {
+    UniquePtr<UniqueTestDerived> first(new UniqueTestDerived);
+    UniquePtr<UniqueTestBase> second(new UniqueTestBase);
+    UniqueTestBase* address = first.Get();
+
+    second = std::move(first);
+
+    EXPECT_EQ(first.Get(), nullptr);
+    ASSERT_EQ(second.Get(), address);
+    ASSERT_NE(second.Get(), nullptr);
+    EXPECT_EQ((*second).Value(), 67);
+}
