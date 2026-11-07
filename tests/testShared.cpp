@@ -367,3 +367,87 @@ TEST(SharedTests, Pointers1000000000) {
     EXPECT_EQ(original.GetReferenceCount(), 1u);
     EXPECT_EQ(*original, 67);
 }
+
+struct SharedTestBase {
+    virtual ~SharedTestBase() = default;
+
+    virtual int Value() const {
+        return 10;
+    }
+};
+
+struct SharedTestDerived : SharedTestBase {
+    int Value() const override {
+        return 67;
+    }
+};
+
+TEST(SharedTests, EmptyArray) {
+    SharedPtr<int[]> numbers;
+
+    EXPECT_TRUE(numbers.Empty());
+    EXPECT_EQ(numbers.Get(), nullptr);
+    EXPECT_EQ(numbers.GetReferenceCount(), 0u);
+
+    numbers.Reset(new int[2]{10, 20});
+
+    ASSERT_NE(numbers.Get(), nullptr);
+    EXPECT_FALSE(numbers.Empty());
+    EXPECT_EQ(numbers.GetReferenceCount(), 1u);
+    EXPECT_EQ(numbers[0], 10);
+    EXPECT_EQ(numbers[1], 20);
+}
+
+TEST(SharedTests, ArrayResetSamePointer) {
+    SharedPtr<int[]> first(new int[3]{10, 20, 30});
+    SharedPtr<int[]> second(first);
+    int* address = first.Get();
+
+    first.Reset(address);
+
+    ASSERT_EQ(first.Get(), address);
+    ASSERT_EQ(second.Get(), address);
+    EXPECT_EQ(first.GetReferenceCount(), 2u);
+    EXPECT_EQ(second.GetReferenceCount(), 2u);
+    EXPECT_EQ(first[0], 10);
+    EXPECT_EQ(second[2], 30);
+}
+
+TEST(SharedTests, DerivedToBaseCopyConstructor) {
+    SharedPtr<SharedTestDerived> first(new SharedTestDerived);
+
+    SharedPtr<SharedTestBase> second(first);
+
+    ASSERT_NE(second.Get(), nullptr);
+    EXPECT_EQ(first.Get(), second.Get());
+    EXPECT_EQ(first.GetReferenceCount(), 2u);
+    EXPECT_EQ(second.GetReferenceCount(), 2u);
+    EXPECT_EQ((*second).Value(), 67);
+
+    first.Reset();
+
+    EXPECT_TRUE(first.Empty());
+    EXPECT_EQ(first.GetReferenceCount(), 0u);
+    EXPECT_EQ(second.GetReferenceCount(), 1u);
+    EXPECT_EQ((*second).Value(), 67);
+}
+
+TEST(SharedTests, DerivedToBaseCopyAssignment) {
+    SharedPtr<SharedTestDerived> first(new SharedTestDerived);
+    SharedPtr<SharedTestBase> second(new SharedTestBase);
+
+    second = first;
+
+    ASSERT_NE(second.Get(), nullptr);
+    EXPECT_EQ(first.Get(), second.Get());
+    EXPECT_EQ(first.GetReferenceCount(), 2u);
+    EXPECT_EQ(second.GetReferenceCount(), 2u);
+    EXPECT_EQ((*second).Value(), 67);
+
+    second.Reset();
+
+    EXPECT_TRUE(second.Empty());
+    EXPECT_EQ(second.GetReferenceCount(), 0u);
+    EXPECT_EQ(first.GetReferenceCount(), 1u);
+    EXPECT_EQ((*first).Value(), 67);
+}
